@@ -362,8 +362,8 @@ def main():
     args = parser.parse_args()
 
 
-    v1 = read_file_content(args.file_v1)
-    v2 = read_file_content(args.file_v2)
+    v1 = read_file_content(args.v1)
+    v2 = read_file_content(args.v2)
 
     ils_resolution(v1, v2)
 
