@@ -21,14 +21,27 @@ This repository is structured as a three-tier research system designed for acade
 ## Repository Structure
 
 ├── sbcr.py # Core ILS algorithm implementation
+
 ├── TOSEM2025/
+
 │ ├── sbcr_evaluate.py # Batch evaluation system
+
 │ ├── sbcr_tunning.py # Parameter tuning infrastructure
+
 │ └── analyses_notebooks/ # Research analysis notebooks
+
 │ ├── RQ1.ipynb # Dataset characteristics analysis
+
 │ ├── RQ2.ipynb # Random candidate similarity analysis
-│ ├── RQ5.ipynb # Aggregation function evaluation
+
+│ ├── RQ3.ipynb # Aggregation functions evaluation
+
+│ ├── RQ4.ipynb # Analysis of corner cases
+
+│ ├── RQ5.ipynb # In-depth aggregation function evaluation
+
 │ ├── RQ6.ipynb # Performance analysis
+
 │ └── RQ6_tuning.ipynb # Parameter tuning results
 
 
