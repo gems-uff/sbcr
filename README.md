@@ -1,12 +1,12 @@
 (For a more in-depth wiki, check https://deepwiki.com/gems-uff/sbcr)
 
-# SBCR - Source Code Conflict Resolution
+# SBCR - Search-Based Conflict Resolution
 
 A research system that implements Iterated Local Search (ILS) algorithms for automated resolution of merge conflicts in source code. 
 
 ## Overview
 
-SBCR (Source Code Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs ILS metaheuristics to search for optimal conflict resolutions. 
+SBCR (Search-Based Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs ILS metaheuristics to search for optimal conflict resolutions. 
 
 This repository is structured as a three-tier research system designed for academic research and includes comprehensive experimental infrastructure for evaluating conflict resolution approaches.
 
