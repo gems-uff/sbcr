@@ -2,21 +2,21 @@
 
 # SBCR - Source Code Conflict Resolution
 
-A research system that implements Iterated Local Search (ILS) algorithms for automated resolution of merge conflicts in source code. `sbcr.py:1`
+A research system that implements Iterated Local Search (ILS) algorithms for automated resolution of merge conflicts in source code. 
 
 ## Overview
 
-SBCR (Source Code Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs ILS metaheuristics to search for optimal conflict resolutions. `sbcr.py:303-327`
+SBCR (Source Code Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs ILS metaheuristics to search for optimal conflict resolutions. 
 
 This repository is structured as a three-tier research system designed for academic research and includes comprehensive experimental infrastructure for evaluating conflict resolution approaches.
 
 ## Features
 
 - **Automated Conflict Resolution**: Uses Iterated Local Search to generate optimal merge conflict resolutions
-- **Gestalt Similarity Evaluation**: Employs LCS-based similarity metrics for candidate assessment `sbcr.py:62-83`
+- **Gestalt Similarity Evaluation**: Employs LCS-based similarity metrics for candidate assessment 
 - **Experimental Infrastructure**: Comprehensive batch evaluation and parameter tuning systems
 - **Research Analysis**: Jupyter notebooks for statistical analysis and performance evaluation
-- **Configurable Parameters**: Multiple timeout and optimization parameters for algorithm tuning `sbcr.py:7-13`
+- **Configurable Parameters**: Multiple timeout and optimization parameters for algorithm tuning 
 
 ## Repository Structure
 
@@ -39,7 +39,7 @@ This repository is structured as a three-tier research system designed for acade
 The system requires the following Python packages:
 
 - `pandas` - Data manipulation and Excel output
-- `pylcs` - Efficient LCS computation for Gestalt similarity `sbcr.py:3`
+- `pylcs` - Efficient LCS computation for Gestalt similarity 
 - `matplotlib` - Visualization for research analysis
 - `scipy` - Statistical analysis functions
 - `jupyter` - For running analysis notebooks
