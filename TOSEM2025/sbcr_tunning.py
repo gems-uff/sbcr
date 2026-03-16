@@ -10,8 +10,8 @@ import sys
 NEIGHBOR_FINDING_TIMEOUT_SECONDS = 3
 MAX_NEIGHBOR_TRYING = 200
 LOCAL_SEARCH_TIMEOUT_SECONDS = 5
-ILS_TIMEOUT_SECONDS = 100
-ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 5
+RRHC_TIMEOUT_SECONDS = 100
+RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 5
 LOCAL_SEARCH_MAXIMUM_NEIGHBORS = 5
 TUNNING_TIMEOUTS = [10,20,30,40]
 MAX_ITERATIONS_WITHOUT_IMPROVEMENT_VALUES = [5,10,15,20]
@@ -230,10 +230,10 @@ def save_iterations_info(iterations_info):
     if SAVE_ITERATION_INFO:
         if not os.path.exists(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv'):
             with open(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv', 'w') as f:
-                f.write('LOCAL_SEARCH_MAXIMUM_NEIGHBORS,ILS_TIMEOUT_SECONDS,MAX_ITERATIONS_WITHOUT_IMPROVEMENT,iteration_number,fitness,elapsed_time,iterations_without_improvement\n')
+                f.write('LOCAL_SEARCH_MAXIMUM_NEIGHBORS,RRHC_TIMEOUT_SECONDS,MAX_ITERATIONS_WITHOUT_IMPROVEMENT,iteration_number,fitness,elapsed_time,iterations_without_improvement\n')
         with open(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv', 'a') as f:
             for iteration_info in iterations_info:
-                f.write(f'{LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{ILS_TIMEOUT_SECONDS},{ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{iteration_info[0]},{iteration_info[1]},{iteration_info[2]},{iteration_info[3]}\n')
+                f.write(f'{LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{RRHC_TIMEOUT_SECONDS},{RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{iteration_info[0]},{iteration_info[1]},{iteration_info[2]},{iteration_info[3]}\n')
 
 def clear_iteration_info():
     if SAVE_ITERATION_INFO:
@@ -477,7 +477,7 @@ def local_search(starting_candidate, starting_candidate_fitness, n, v1, v2, sour
 def pertubate(candidate, v1, v2):
     return partial_order_random_candidate(v1, v2)
 
-def ils_resolution(v1, v2):
+def rrhc_resolution(v1, v2):
 
     save_candidate(v1+'\n'+v2, 'available_lines')
 
@@ -496,7 +496,7 @@ def ils_resolution(v1, v2):
     iteration_number = 1
     iterations_without_improvement = 0
     iterations_info = []
-    while (time.time() - start_time < ILS_TIMEOUT_SECONDS) and iterations_without_improvement <= ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
+    while (time.time() - start_time < RRHC_TIMEOUT_SECONDS) and iterations_without_improvement <= RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
         s_new = pertubate(s_star, v1, v2)
         f_new = evaluate(s_new, v1, v2)
 
@@ -529,7 +529,7 @@ def adapt_dataset(df):
       
 
 def tunning():
-    global DEBUG_REPOSITORY_PATH, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, ILS_TIMEOUT_SECONDS, ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT
+    global DEBUG_REPOSITORY_PATH, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, RRHC_TIMEOUT_SECONDS, RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT
     df_chunks = pd.read_json(f"../data/{DATASET}_training.json")
     df_chunks = df_chunks.sample(frac=1, random_state=RANDOM_SEED)
     data = []
@@ -543,7 +543,7 @@ def tunning():
         df_collected_configurations = list(df_collected_configurations[df_collected_configurations['dataset'] == DATASET]['configuration'])
     else:
         df_collected_configurations = []
-    columns = ['chunk_id', 'fitness', 'solution_sim_lcs', 'status', 'neighbor_timeout', 'local_search_timeout', 'ils_timeout', 'maximum_neighbors', 'max_iterations_without_improvement', 'time_seconds']
+    columns = ['chunk_id', 'fitness', 'solution_sim_lcs', 'status', 'neighbor_timeout', 'local_search_timeout', 'rrhc_timeout', 'maximum_neighbors', 'max_iterations_without_improvement', 'time_seconds']
     analyzed_chunk_ids = []
 #     if os.path.exists(RESULT_FILE):
 #         df = pd.read_excel(RESULT_FILE, engine='openpyxl')
@@ -568,16 +568,16 @@ def tunning():
                             if not os.path.exists(f"{DEBUG_REPOSITORY_PATH}"):
                                 os.makedirs(DEBUG_REPOSITORY_PATH, exist_ok=True) 
                             for max_iterations_without_improvement in MAX_ITERATIONS_WITHOUT_IMPROVEMENT_VALUES:
-                                ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = max_iterations_without_improvement
+                                RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = max_iterations_without_improvement
                                 for maximum_neighbors in LOCAL_SEARCH_MAXIMUM_NEIGHBORS_VALUES:
                                     LOCAL_SEARCH_MAXIMUM_NEIGHBORS = maximum_neighbors
                                     for timeout in TUNNING_TIMEOUTS:
                                         configuration = f"({maximum_neighbors}, {max_iterations_without_improvement}, {timeout})"
                                         if not configuration in df_collected_configurations:
-                                            ILS_TIMEOUT_SECONDS = timeout
+                                            RRHC_TIMEOUT_SECONDS = timeout
                                             print(f"Analyzing chunk ({chunk_id}) with configuration {configuration}", flush=True)
                                             start_time = time.time()
-                                            candidate, fitness = ils_resolution(v1, v2)
+                                            candidate, fitness = rrhc_resolution(v1, v2)
                                             candidate = get_candidate_text(candidate, v1, v2)
                                             end_time = time.time()
                                             elapsed_time = end_time - start_time
@@ -586,8 +586,8 @@ def tunning():
                                                     os.makedirs(OUTPUT_FOLDER)
                                                 write_file(candidate, f"{OUTPUT_FOLDER}/{chunk_id}")
                                             lcs_solution_similarity = compare(solution, candidate)
-                                            # print(f"Config: ({LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{ILS_TIMEOUT_SECONDS}). Elapsed time: {elapsed_time}, Fitness: {fitness}, LCS Similarity: {lcs_solution_similarity}", flush=True)
-                                            data.append([row['chunk_id'], fitness, lcs_solution_similarity, 'ok', NEIGHBOR_FINDING_TIMEOUT_SECONDS, LOCAL_SEARCH_TIMEOUT_SECONDS, ILS_TIMEOUT_SECONDS, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT, elapsed_time])
+                                            # print(f"Config: ({LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{RRHC_TIMEOUT_SECONDS}). Elapsed time: {elapsed_time}, Fitness: {fitness}, LCS Similarity: {lcs_solution_similarity}", flush=True)
+                                            data.append([row['chunk_id'], fitness, lcs_solution_similarity, 'ok', NEIGHBOR_FINDING_TIMEOUT_SECONDS, LOCAL_SEARCH_TIMEOUT_SECONDS, RRHC_TIMEOUT_SECONDS, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT, elapsed_time])
                                             if count % 5 == 0:
                                                 pd.DataFrame(data, columns=columns).to_excel(RESULT_FILE, index=False)
                                                 count=0
