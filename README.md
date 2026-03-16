@@ -2,17 +2,17 @@
 
 # SBCR - Search-Based Conflict Resolution
 
-A research system that implements Iterated Local Search (ILS) algorithms for automated resolution of merge conflicts in source code. 
+A research system that implements Random Restart Hill Climbing (RRHC) algorithms for automated resolution of merge conflicts in source code. 
 
 ## Overview
 
-SBCR (Search-Based Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs ILS metaheuristics to search for optimal conflict resolutions. 
+SBCR (Search-Based Conflict Resolution) addresses the problem of automatically resolving source code merge conflicts by combining lines from two conflicting versions (v1 and v2) while preserving partial order constraints. The system uses a Gestalt similarity metric based on Longest Common Subsequence (LCS) to evaluate candidate resolutions and employs RRHC heuristics to search for optimal conflict resolutions. 
 
 This repository is structured as a three-tier research system designed for academic research and includes comprehensive experimental infrastructure for evaluating conflict resolution approaches.
 
 ## Features
 
-- **Automated Conflict Resolution**: Uses Iterated Local Search to generate optimal merge conflict resolutions
+- **Automated Conflict Resolution**: Uses Random Restart Hill Climbing to generate optimal merge conflict resolutions
 - **Gestalt Similarity Evaluation**: Employs LCS-based similarity metrics for candidate assessment 
 - **Experimental Infrastructure**: Comprehensive batch evaluation and parameter tuning systems
 - **Research Analysis**: Jupyter notebooks for statistical analysis and performance evaluation
@@ -20,7 +20,7 @@ This repository is structured as a three-tier research system designed for acade
 
 ## Repository Structure
 
-├── sbcr.py # Core ILS algorithm implementation
+├── sbcr.py # Core RRHC algorithm implementation
 
 ├── TOSEM2025/
 
@@ -89,7 +89,7 @@ python TOSEM2025/sbcr_tunning.py
 
 ## Algorithm Overview
 
-The SBCR algorithm implements an Iterated Local Search approach with the following key components:
+The SBCR algorithm implements an Random Restart Hill Climbing approach with the following key components:
 
 ### Candidate Representation
 
@@ -120,9 +120,9 @@ Key algorithm parameters and their defaults:
 
 | Parameter                                          | Default | Description                                      |
 |----------------------------------------------------|---------|--------------------------------------------------|
-| ILS_TIMEOUT_SECONDS                                | 15      | Maximum ILS execution time                       |
+| RRHC_TIMEOUT_SECONDS                                | 15      | Maximum RRHC execution time                       |
 | LOCAL_SEARCH_MAXIMUM_NEIGHBORS                     | 5       | Maximum neighbors per local search               |
-| ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT   | 10      | Early stopping criterion                         |
+| RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT   | 10      | Early stopping criterion                         |
 | NEIGHBOR_FINDING_TIMEOUT_SECONDS                   | 3       | Timeout for neighbor generation                  |
 | RANDOM_SEED                                        | 3022024 | Reproducibility seed                             |
 
@@ -169,7 +169,7 @@ The system generates multiple output artifacts:
 
 - The algorithm ensures generated candidates are not identical to either input version, forcing actual conflict resolution rather than simple selection 
 - Perturbation generates entirely new random candidates to escape local optima rather than making small modifications 
-- The system implements multi-level timeouts (neighbor generation, local search, overall ILS) to ensure robust termination
+- The system implements multi-level timeouts (neighbor generation, local search, overall RRHC) to ensure robust termination
 - All analysis notebooks follow consistent data loading patterns and use standardized column schemas for reproducibility
 
 ## License
