@@ -10,8 +10,8 @@ import sys
 NEIGHBOR_FINDING_TIMEOUT_SECONDS = 3
 MAX_NEIGHBOR_TRYING = 200
 LOCAL_SEARCH_TIMEOUT_SECONDS = 5
-ILS_TIMEOUT_SECONDS = 100
-ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 5
+RRHC_TIMEOUT_SECONDS = 100
+RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 5
 LOCAL_SEARCH_MAXIMUM_NEIGHBORS = 5
 DEBUG_ACTIVE = False
 SAVE_ITERATION_INFO = True
@@ -27,13 +27,13 @@ if len(sys.argv) > 1:
     if len(sys.argv) > 2:
             # configuration example: "5,5,10"
             # The first value in the tuple is the maximum number of neighbors to be generated in the local search
-            # The second value is the maximum number of iterations without improvement in the ILS
-            # The third value is the timeout in seconds for the ILS
+            # The second value is the maximum number of iterations without improvement in the RRHC
+            # The third value is the timeout in seconds for the RRHC
         CONFIGURATION = sys.argv[2]
         LOCAL_SEARCH_MAXIMUM_NEIGHBORS = int(CONFIGURATION.split(',')[0].replace('"','').strip())
-        ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = int(CONFIGURATION.split(',')[1].strip())
-        ILS_TIMEOUT_SECONDS = int(CONFIGURATION.split(',')[2].replace('"','').strip())
-        print(f"Configuration: {LOCAL_SEARCH_MAXIMUM_NEIGHBORS}, {ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT}, {ILS_TIMEOUT_SECONDS}")
+        RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = int(CONFIGURATION.split(',')[1].strip())
+        RRHC_TIMEOUT_SECONDS = int(CONFIGURATION.split(',')[2].replace('"','').strip())
+        print(f"Configuration: {LOCAL_SEARCH_MAXIMUM_NEIGHBORS}, {RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT}, {RRHC_TIMEOUT_SECONDS}")
         if len(sys.argv) > 3:
             EXECUTION_NAME = sys.argv[3]
 
@@ -236,10 +236,10 @@ def save_iterations_info(iterations_info):
     if SAVE_ITERATION_INFO:
         if not os.path.exists(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv'):
             with open(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv', 'w') as f:
-                f.write('LOCAL_SEARCH_MAXIMUM_NEIGHBORS,ILS_TIMEOUT_SECONDS,MAX_ITERATIONS_WITHOUT_IMPROVEMENT,iteration_number,fitness,elapsed_time,iterations_without_improvement\n')
+                f.write('LOCAL_SEARCH_MAXIMUM_NEIGHBORS,RRHC_TIMEOUT_SECONDS,MAX_ITERATIONS_WITHOUT_IMPROVEMENT,iteration_number,fitness,elapsed_time,iterations_without_improvement\n')
         with open(f'{DEBUG_REPOSITORY_PATH}/iterations_info.csv', 'a') as f:
             for iteration_info in iterations_info:
-                f.write(f'{LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{ILS_TIMEOUT_SECONDS},{ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{iteration_info[0]},{iteration_info[1]},{iteration_info[2]},{iteration_info[3]}\n')
+                f.write(f'{LOCAL_SEARCH_MAXIMUM_NEIGHBORS},{RRHC_TIMEOUT_SECONDS},{RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT},{iteration_info[0]},{iteration_info[1]},{iteration_info[2]},{iteration_info[3]}\n')
 
 def clear_iteration_info():
     if SAVE_ITERATION_INFO:
@@ -483,7 +483,7 @@ def local_search(starting_candidate, starting_candidate_fitness, n, v1, v2, sour
 def pertubate(candidate, v1, v2):
     return partial_order_random_candidate(v1, v2)
 
-def ils_resolution(v1, v2):
+def rrhc_resolution(v1, v2):
 
     save_candidate(v1+'\n'+v2, 'available_lines')
 
@@ -502,7 +502,7 @@ def ils_resolution(v1, v2):
     iteration_number = 1
     iterations_without_improvement = 0
     iterations_info = []
-    while (time.time() - start_time < ILS_TIMEOUT_SECONDS) and iterations_without_improvement <= ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
+    while (time.time() - start_time < RRHC_TIMEOUT_SECONDS) and iterations_without_improvement <= RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
         s_new = pertubate(s_star, v1, v2)
         f_new = evaluate(s_new, v1, v2)
 
@@ -535,7 +535,7 @@ def adapt_dataset(df):
       
 
 def execute_experiment():
-    global DEBUG_REPOSITORY_PATH, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, ILS_TIMEOUT_SECONDS, ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT
+    global DEBUG_REPOSITORY_PATH, LOCAL_SEARCH_MAXIMUM_NEIGHBORS, RRHC_TIMEOUT_SECONDS, RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT
     df_chunks = pd.read_json(f"../data/{DATASET}_testing.json")
     df_chunks = df_chunks.sample(frac=1, random_state=RANDOM_SEED)
     data = []
@@ -567,7 +567,7 @@ def execute_experiment():
                         if not os.path.exists(f"{DEBUG_REPOSITORY_PATH}"):
                             os.makedirs(DEBUG_REPOSITORY_PATH, exist_ok=True) 
                         start_time = time.time()
-                        candidate, fitness = ils_resolution(v1, v2)
+                        candidate, fitness = rrhc_resolution(v1, v2)
                         candidate = get_candidate_text(candidate, v1, v2)
                         end_time = time.time()
                         elapsed_time = end_time - start_time
