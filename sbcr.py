@@ -7,8 +7,8 @@ import sys
 NEIGHBOR_FINDING_TIMEOUT_SECONDS = 3
 MAX_NEIGHBOR_TRYING = 5
 LOCAL_SEARCH_TIMEOUT_SECONDS = 5
-ILS_TIMEOUT_SECONDS = 15
-ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 10
+RRHC_TIMEOUT_SECONDS = 15
+RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT = 10
 LOCAL_SEARCH_MAXIMUM_NEIGHBORS = 5
 RANDOM_SEED = 3022024
 
@@ -300,7 +300,7 @@ def local_search(starting_candidate, starting_candidate_fitness, n, v1, v2, sour
 def pertubate(candidate, v1, v2):
     return partial_order_random_candidate(v1, v2)
 
-def ils_resolution(v1, v2):
+def rrhc_resolution(v1, v2):
 
     s_star = partial_order_random_candidate(v1, v2)
     f_star = evaluate(get_candidate_text(s_star, v1, v2), v1, v2)
@@ -310,7 +310,7 @@ def ils_resolution(v1, v2):
     start_time = time.time()
     iteration_number = 1
     iterations_without_improvement = 0
-    while (time.time() - start_time < ILS_TIMEOUT_SECONDS) and iterations_without_improvement <= ILS_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
+    while (time.time() - start_time < RRHC_TIMEOUT_SECONDS) and iterations_without_improvement <= RRHC_STOP_CRITERIA_ITERATIONS_WITHOUT_IMPROVEMENT:
         s_new = pertubate(s_star, v1, v2)
         f_new = evaluate(s_new, v1, v2)
 
@@ -365,7 +365,7 @@ def main():
     v1 = read_file_content(args.v1)
     v2 = read_file_content(args.v2)
 
-    ils_resolution(v1, v2)
+    rrhc_resolution(v1, v2)
 
 if __name__ == "__main__":
     main()
